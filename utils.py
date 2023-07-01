@@ -134,7 +134,7 @@ def get_similar_images(text_embedding: str, similarity_threshold: float = 0.25) 
     return [path for sim, path in similar_images]
 
 # Function to compute the similarity threshold
-def compute_similarity_threshold(prompt: str, base_threshold: float = 0.25, increment: float = 0.01) -> float:
+def compute_similarity_threshold(prompt: str, base_threshold: float = 0.24, increment: float = 0.02) -> float:
     words = [word for word in prompt.split() if word not in stop_words]
     num_words = len(words)
     return base_threshold + num_words * increment
