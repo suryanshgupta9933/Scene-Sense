@@ -1,50 +1,45 @@
 # Importing Dependencies
-from fastapi import FastAPI, UploadFile, File, Body
-from pydantic import BaseModel
-from typing import List, Optional
-import torch
-import open_clip
 from PIL import Image
-import io
+import streamlit as st
+from client import send_images, send_text, compute_similarity_threshold, get_similar_images
 
-# Create your FastAPI instance
-app = FastAPI()
+# Page config
+st.set_page_config(
+    page_title="Scene Sense",
+    page_icon="https://pbs.twimg.com/profile_images/1662946160326352897/wcFtvNCi_400x400.png",  # replace with URL of your icon
+    layout="wide"  # enables a wider screen layout
+)
 
-# Define your data model
-class Text(BaseModel):
-    prompt: Optional[str] = None
+# Main function
+def app():
+    st.title('📷Scene Sense')
 
-# Check if GPU is available
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    directory = st.text_input('Enter the directory path:')
+    if st.button('Process Images'):
+        send_images(directory)
+        st.success('Images processed successfully!')
 
-# Load the model and tokenizer
-model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained='laion2b_s34b_b79k', device=device)
-tokenizer = open_clip.get_tokenizer('ViT-B-32')
+    prompt = st.text_input('Enter a search prompt:')
+    if st.button('Find Similar Images'):
+        text_embedding = send_text(prompt)
+        if text_embedding is not None:
+            text_embedding = text_embedding.get('text_embedding')
+            similarity_threshold = compute_similarity_threshold(prompt)
+            similar_images = get_similar_images(text_embedding, similarity_threshold)
+            if similar_images:
+                st.success('Similar images found!')
+                # Creating a fixed number of columns for gallery view
+                num_columns = 4
+                cols = st.columns(num_columns)
+                for index, image_path in enumerate(similar_images):
+                    image = Image.open(image_path)
+                    with cols[index % num_columns]:  # cycling through columns
+                        st.image(image)
+            else:
+                st.info('No similar images found.')
+        else:
+            st.error('Error processing the prompt.')
 
-# Image Embeddings Endpoint
-@app.post("/image_embeddings/")
-async def create_embeddings(images: List[UploadFile] = File(...)):
-    embeddings = []
-
-    for image in images:
-        image_bytes = await image.read()
-        image = Image.open(io.BytesIO(image_bytes))
-        image = preprocess(image).unsqueeze(0).to(device)
-
-        with torch.no_grad(), torch.cuda.amp.autocast():
-            image_features = model.encode_image(image)
-
-        embeddings.append(image_features.tolist())
-
-    return {"image_embeddings": embeddings}
-
-# Text Embeddings Endpoint
-@app.post("/text_embeddings/")
-async def create_text_embeddings(item: Text):
-    text = tokenizer(item.prompt).to(device)
-
-    with torch.no_grad(), torch.cuda.amp.autocast():
-        text_features = model.encode_text(text)
-        text_features /= text_features.norm(dim=-1, keepdim=True)
-
-    return {"text_embedding": text_features.tolist()}
+# Running the app
+if __name__ == "__main__":
+    app()
