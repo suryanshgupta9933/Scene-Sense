@@ -6,6 +6,8 @@ import torch
 import torch.nn.functional as F
 from typing import List, Generator
 from pymongo import MongoClient
+# from dotenv import load_dotenv
+# from pymongo.server_api import ServerApi
 from IPython.display import display, Image
 import nltk
 from nltk.corpus import stopwords
@@ -24,6 +26,28 @@ client = MongoClient('mongodb://localhost:27017')  # replace with your connectio
 # Create a database and a collection within the database
 db = client['scene-sense']
 embeddings_collection = db['embeddings']
+
+# # Loading Environment Variables
+# load_dotenv()
+# username = os.getenv("MONGO_USERNAME")
+# password = os.getenv("MONGO_PASSWORD")
+
+# # Download the NLTK stopwords
+# nltk.download('stopwords')
+# stop_words = set(stopwords.words('english'))
+
+# # Username and password for MongoDB Atlas
+# uri = f'mongodb+srv://{username}:{password}@scene-sense.9km2ony.mongodb.net/?retryWrites=true&w=majority'
+
+# # Create a new client and connect to the server
+# client = MongoClient(uri, server_api=ServerApi('1'))
+
+# # Send a ping to confirm a successful connection
+# try:
+#     client.admin.command('ping')
+#     print("Pinged your deployment. You successfully connected to MongoDB!")
+# except Exception as e:
+#     print(e)
 
 # Create an index on the 'embedding' field
 embeddings_collection.create_index("embedding")
