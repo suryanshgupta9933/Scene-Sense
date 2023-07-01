@@ -1,7 +1,7 @@
 # Importing Dependencies
 from PIL import Image
 import streamlit as st
-from client import send_images, send_text, compute_similarity_threshold, get_similar_images
+from utils import send_images, send_text, compute_similarity_threshold, get_similar_images
 
 # Page config
 st.set_page_config(
