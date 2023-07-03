@@ -4,3 +4,4 @@ pymongo
 pillow
 nltk
 ipython
+python-dotenv
