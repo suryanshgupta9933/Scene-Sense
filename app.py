@@ -75,8 +75,8 @@ def app():
 
     # App title and explanation
     st.title('🎠Scene Sense')
-    st.write('''Scene Sense is an AI-powered reverse search engine gallery app that revolutionizes the way users interact with their photo collections.''')
-    st.write('''With Scene Sense, finding the perfect photo becomes a breeze as users can search using natural language queries.''')
+    st.write('Scene Sense is an AI-powered reverse search engine gallery app that revolutionizes the way users interact with their photo collections.')
+    st.write('With Scene Sense, finding the perfect photo becomes a breeze as users can search using natural language queries.')
 
     # Sidebar with mode selection
     st.sidebar.title("Mode")
