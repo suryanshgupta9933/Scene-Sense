@@ -20,11 +20,11 @@ uri = f'mongodb+srv://{username}:{password}@scene-sense.9km2ony.mongodb.net/?ret
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 
-# Create a new database
+# Your database name
 db = client['scene-sense']
 
-# Create a new collection
-embeddings_collection = db['sample-images-embeddings']
+# Your collection name
+embeddings_collection = db['embeddings']
 
 # Page config
 st.set_page_config(
