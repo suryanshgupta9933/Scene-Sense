@@ -1,23 +1,18 @@
-# Importing Dependencies
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from typing import List, Optional
 import torch
 import open_clip
 from PIL import Image
 import io
-import requests
 import uvicorn
 
 # Create your FastAPI instance
 app = FastAPI()
 
-# Define your data model
+# Define your data model for text
 class Text(BaseModel):
     prompt: Optional[str] = None
-
-class ImageUrl(BaseModel):
-    url: str  # Change the type to str
 
 # Check if GPU is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -28,19 +23,11 @@ tokenizer = open_clip.get_tokenizer('ViT-B-32')
 
 # Image Embeddings Endpoint
 @app.post("/image_embeddings/")
-async def create_embeddings(image_urls: List[ImageUrl]):
+async def create_embeddings(images: List[UploadFile] = File(...)):
     embeddings = []
 
-    for image_url in image_urls:
-        try:
-            response = requests.get(image_url.url)
-            response.raise_for_status()
-        except requests.HTTPError as http_err:
-            raise HTTPException(status_code=400, detail=f"HTTP error occurred: {http_err}")
-        except Exception as err:
-            raise HTTPException(status_code=400, detail=f"Error occurred: {err}")
-
-        image_bytes = response.content
+    for image_file in images:
+        image_bytes = await image_file.read()
         image = Image.open(io.BytesIO(image_bytes))
         image = preprocess(image).unsqueeze(0).to(device)
 
