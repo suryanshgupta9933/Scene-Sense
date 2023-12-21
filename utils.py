@@ -22,7 +22,7 @@ username = os.getenv("MONGO_USERNAME")
 password = os.getenv("MONGO_PASSWORD")
 
 # Username and password for MongoDB Atlas
-uri = f'mongodb+srv://{username}:{password}@scene-sense.9km2ony.mongodb.net/?retryWrites=true&w=majority'
+uri = f'mongodb+srv://{username}:{password}@scene-sense.9km2ony.mongodb.net/?retryWrites=true&w=majority' # Enter your Connection String
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -36,7 +36,7 @@ embeddings_collection = db['sample-images-embeddings']
 # Function to get the embeddings of the text prompt
 def send_text(prompt):
     data = {"prompt": prompt}
-    response = requests.post('http://148.113.143.16:9999/text_embeddings/', json=data)
+    response = requests.post('http://localhost:8000/text_embeddings/', json=data) # Enter your FastAPI endpoint
     if response.status_code == 200:
         return response.json()
     else:
