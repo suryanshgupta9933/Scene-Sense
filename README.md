@@ -46,4 +46,4 @@ We were inspired by the idea of using AI to help users find photos in their gall
 - If you have deployed the main.py file on a server, then change the URL in the `utils.py` and 'upload_images.py' file.
 
 ## Demo
-![Demo](/assets/scene-sense-demo.mkv)
+![Demo](assets/scene-sense-demo.mkv)
