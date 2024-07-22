@@ -1,8 +1,0 @@
-pillow
-streamlit
-python-dotenv
-pymongo
-torch
-requests
-IPython
-nltk
