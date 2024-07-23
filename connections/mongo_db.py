@@ -6,6 +6,8 @@ from pymongo import MongoClient
 
 # Load environment variables
 load_dotenv()
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 MONGODB_URL = os.getenv("MONGO_CONNECTION_STRING")
 
 # Configure logging
@@ -16,8 +18,8 @@ logger = logging.getLogger(__name__)
 def connect_mongo_db():
     try:
         client = MongoClient(MONGODB_URL)
-        db = client["scene-sense"]
-        user_data = db["user_data"]
+        db = client[DB_NAME]
+        user_data = db[COLLECTION_NAME]
         return user_data
     except Exception as e:
         logger.error(f"Failed to connect to MongoDB: {e}")
