@@ -9,16 +9,17 @@ from connections.gcp import connect_gcp
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def create_storage(username):
+def create_storage(user_id):
+    """
+    Create a storage folder for the user in Google Cloud Storage.
+    """
     try:
         # Connect to Google Cloud Storage
         bucket = connect_gcp()
-        # Generate a unique folder name
-        folder_name = f"{username}-{uuid.uuid4().hex}/"
-        blob = bucket.blob(folder_name)
+        blob = bucket.blob(f"{user_id}/")
         # Create an empty folder
         blob.upload_from_string('')
-        return folder_name
+        logger.info(f"Storage folder created for user: {user_id}")
     except GoogleAPIError as e:
         logger.error(f"Failed to create storage folder: {e}")
         return None
