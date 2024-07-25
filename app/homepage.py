@@ -4,6 +4,9 @@ import requests
 
 # Home Page Element
 def show_home_page():
+    """
+    Display the home page of the app.
+    """
     st.markdown("""
         Scene Sense is an AI-powered image search engine gallery app that revolutionizes the way users interact with their photo collections. 
         \nWith Scene Sense, finding the perfect photo becomes a breeze as users can search using natural language queries.
@@ -14,6 +17,9 @@ def show_home_page():
 
 # Login Page Element
 def show_login_page():
+    """
+    Display the login page of the app.
+    """
     st.subheader("Login")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -25,6 +31,7 @@ def show_login_page():
             if response.status_code == 200:
                 st.session_state.logged_in = True
                 st.session_state.username = response.json()["username"]
+                st.session_state.storage = response.json()["id"]
                 st.rerun()
             else:
                 st.error(response.json().get("detail", "Failed to fetch user details"))
@@ -33,6 +40,9 @@ def show_login_page():
 
 # Signup Page Element
 def show_signup_page():
+    """
+    Display the signup page of the app
+    """
     st.subheader("Signup")
     new_username = st.text_input("Username")
     new_password = st.text_input("Password", type="password")
