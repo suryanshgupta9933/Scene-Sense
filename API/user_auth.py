@@ -1,6 +1,7 @@
 # Install Dependencies
 import os
 import logging
+import secrets
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -18,8 +19,8 @@ app = FastAPI()
 # Load environment variables
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -65,9 +66,10 @@ async def signup(user: User):
     # Hash the password
     hashed_password = pwd_context.hash(user.password)
     # Create a new storage for the user
-    blob_name = create_storage(user.username)
-    new_user = {"username": user.username, "password": hashed_password, "storage": blob_name}
+    user_id = secrets.token_hex(16)
+    new_user = {"id": user_id, "username": user.username, "password": hashed_password}
     user_credentials.insert_one(new_user)
+    create_storage(user_id)
     return {"message": "User registered successfully"}
 
 @app.post("/token", response_model=Token)
@@ -103,8 +105,8 @@ async def read_users_me(token: str = Depends(oauth2_scheme)):
         logger.error(f"User not found: {username}")
         raise HTTPException(status_code=401, detail="User not found")
 
-    return {"username": user["username"], "blob": user["blob"]}
+    return {"id": user["id"], "username": user["username"]}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("user_credentials:app", host="localhost", port=8000, reload=True)
+    uvicorn.run("API.user_auth:app", host="localhost", port=8000, reload=True)
