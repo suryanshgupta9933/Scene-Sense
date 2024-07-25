@@ -7,7 +7,7 @@ from pinecone import Pinecone
 # Load Environment Variables
 load_dotenv()
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-INDEX_NAME = os.getenv("INDEX_NAME")
+INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
