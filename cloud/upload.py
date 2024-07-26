@@ -15,7 +15,7 @@ def upload_images(storage_folder, images):
     """
     try:
         bucket = connect_gcp()
-        
+        blobs = []
         for image in images:
             # Format file name with timestamp
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -25,8 +25,10 @@ def upload_images(storage_folder, images):
             # Upload the image to the specified blob path in the bucket
             blob = bucket.blob(blob_path)
             blob.upload_from_file(image, content_type=image.type)
+            blobs.append(blob)
             logger.info(f"Image {filename} uploaded to {blob_path}.")
         
+        return [blob.public_url for blob in blobs]
         logger.info("All images uploaded successfully.")
         
     except Exception as e:

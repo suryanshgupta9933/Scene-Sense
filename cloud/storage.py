@@ -26,3 +26,20 @@ def create_storage(user_id):
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
         return None
+
+def user_blobs(user_id):
+    """
+    List all the blobs in the user's storage folder.
+    """
+    try:
+        # Connect to Google Cloud Storage
+        bucket = connect_gcp()
+        blobs = list(bucket.list_blobs(prefix=f'{user_id}/'))
+        blobs = [blob for blob in blobs if not blob.name.endswith('/')]
+        return blobs
+    except GoogleAPIError as e:
+        logger.error(f"Failed to list blobs: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+        return None
