@@ -31,4 +31,4 @@ def upload_images(storage_folder, images):
         
     except Exception as e:
         logger.error(f"Error uploading images to Google Cloud Storage: {e}")
-        raise e
+        return None

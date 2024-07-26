@@ -25,6 +25,10 @@ def connect_gcp():
 
 # Return user blobs
 def get_user_blobs(bucket, user_id):
-    blobs = list(bucket.list_blobs(prefix=user_id))
-    blobs = [blob.name for blob in blobs if not blob.name.endswith('/')]
-    return blobs
+    try:
+        blobs = list(bucket.list_blobs(prefix=user_id))
+        blobs = [blob.name for blob in blobs if not blob.name.endswith('/')]
+        return blobs
+    except Exception as e:
+        logger.error(f"Failed to get user blobs: {e}")
+        return None
