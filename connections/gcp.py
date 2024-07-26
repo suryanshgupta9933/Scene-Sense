@@ -22,13 +22,3 @@ def connect_gcp():
     except Exception as e:
         logger.error(f"Failed to connect to Google Cloud Storage: {e}")
         return None
-
-# Return user blobs
-def get_user_blobs(bucket, user_id):
-    try:
-        blobs = list(bucket.list_blobs(prefix=user_id))
-        blobs = [blob.name for blob in blobs if not blob.name.endswith('/')]
-        return blobs
-    except Exception as e:
-        logger.error(f"Failed to get user blobs: {e}")
-        return None
