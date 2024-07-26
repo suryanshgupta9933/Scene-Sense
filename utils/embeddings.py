@@ -7,6 +7,7 @@ import torch
 from transformers import CLIPModel, CLIPProcessor
 
 from utils.fetch_image import fetch_image_from_url
+from cloud.index import update_index
 
 # Load environment variables
 load_dotenv()
@@ -29,7 +30,6 @@ def process_image_embeddings(urls: List[str]):
     embeddings = []
     for url in urls:
         try:
-            logger.info(f"Processing image URL: {url}")
             image = fetch_image_from_url(url)
             inputs = processor(images=image, return_tensors="pt", padding=True)
 
@@ -44,20 +44,14 @@ def process_image_embeddings(urls: List[str]):
             logger.error(f"Failed to get image embedding for URL {url}: {e}")
     return embeddings
 
-def process_text_embeddings(texts: List[str]):
-    embeddings = []
-    for text in texts:
-        try:
-            logger.info(f"Processing text: {text}")
-            inputs = processor(text=text, return_tensors="pt", padding=True)
+def return_text_embeddings(texts: List[str]):
+    inputs = processor(text=texts, return_tensors="pt", padding=True)
+    with torch.no_grad():
+        text_features = model.get_text_features(**inputs)
+    
+    embedding = text_features.numpy().tolist()
+    return embedding
 
-            with torch.no_grad():
-                text_features = model.get_text_features(**inputs)
-
-            embedding = text_features.numpy().tolist()
-            embeddings.append({"text": text, "embedding": embedding})
-            logger.info(f"Successfully processed text: {text}")
-
-        except Exception as e:
-            logger.error(f"Failed to get text embedding for text '{text}': {e}")
-    return embeddings
+def embedding_pipeline(urls: List[str]):
+    embedding_data = process_image_embeddings(urls)
+    update_index(embedding_data)

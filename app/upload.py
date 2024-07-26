@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 
 from cloud.upload import upload_images
-from cloud.index import update_index
+
 
 def show_upload_page():
     """
@@ -19,9 +19,11 @@ def show_upload_page():
         cols = st.columns(3)
         for i, file in enumerate(uploaded_files):
             with cols[i % 3]:
-                st.image(file, caption=file.name, use_column_width=True)
+                st.image(file, use_column_width=True)
     # Upload images and update the index
     if upload_button and uploaded_files:
         urls = upload_images(st.session_state.storage, uploaded_files)
         if urls:
-            embeddings = requests.post("http://localhost:8001/image-embeddings", json={"urls": urls})
+            response = requests.post("http://localhost:8001/image-embeddings", json={"urls": urls})
+            if response.status_code == 200:
+                st.success(response.json()["message"])

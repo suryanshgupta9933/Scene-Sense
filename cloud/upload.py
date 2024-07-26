@@ -24,6 +24,7 @@ def upload_images(storage_folder, images):
             
             # Upload the image to the specified blob path in the bucket
             blob = bucket.blob(blob_path)
+            blob.metadata = {"embedding": "false"}
             blob.upload_from_file(image, content_type=image.type)
             blobs.append(blob)
             logger.info(f"Image {filename} uploaded to {blob_path}.")
