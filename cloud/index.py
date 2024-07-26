@@ -51,7 +51,7 @@ def query_index(query_embedding, user_id):
             include_metadata=True
         )
         logger.info(f"Successfully queried the index for user: {user_id}")
-        print(results)
+        
         # Extract URLs from the matches
         try:
             urls = [match["metadata"]["url"] for match in results["matches"]]
