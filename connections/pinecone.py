@@ -2,7 +2,7 @@
 import os
 import logging
 from dotenv import load_dotenv
-from pinecone import Pinecone
+from pinecone.grpc import PineconeGRPC as Pinecone
 
 # Load Environment Variables
 load_dotenv()
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def connect_pinecone():
     try:
         pinecone = Pinecone(api_key=PINECONE_API_KEY)
-        index = pinecone.index(INDEX_NAME)
+        index = pinecone.Index(INDEX_NAME)
         return index
     except Exception as e:
         logging.error(f"Failed to connect to Pinecone: {e}")

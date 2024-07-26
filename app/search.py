@@ -1,4 +1,5 @@
 # Importing Dependencies
+import requests
 import streamlit as st
 
 from cloud.index import query_index
@@ -11,17 +12,16 @@ def show_search_page():
 
     # Search Results Feed
     search_query = st.text_input("Search for images", value="", key="search")
-    st.write(f"Results for: {search_query}")
-
-    # Example for results
-    results = [
-        {"url": "https://via.placeholder.com/300", "title": "Search Result 1"},
-        {"url": "https://via.placeholder.com/300", "title": "Search Result 2"}
-    ]
-    
-    # Display Search Results
-    cols = st.columns(2)
-    for i, img in enumerate(results):
-        with cols[i % 2]:
-            st.image(img["url"], caption=img["title"], use_column_width=True)
-            st.write("More details...")  # Replace with interactive element
+    search = st.button("Search")
+    if search:
+        # Get the embeddings for the search query
+        response = requests.post("http://localhost:8001/text-embeddings", json={"text": [search_query]})
+        if response.status_code == 200:
+            query_embedding = response.json()["text_embedding"]
+            # Query the index with the search embeddings
+            results = query_index(query_embedding, search_query)
+            # Display Search Results
+            cols = st.columns(2)
+            for i, img in enumerate(results):
+                with cols[i % 2]:
+                    st.image(img["url"], use_column_width=True)

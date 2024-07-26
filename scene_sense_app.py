@@ -41,7 +41,7 @@ if st.session_state.logged_in:
         show_gallery_page()
         
     elif page == "Search":
-        show_search_results_page()
+        show_search_page()
 
     elif page == "Upload":
         show_upload_page()
