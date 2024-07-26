@@ -9,14 +9,26 @@ from connections.gcp import connect_gcp
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def upload_images(storage, images):
+def upload_images(storage_folder, images):
     """
-    Upload images to Google Cloud Storage.
+    Upload images to Google Cloud Storage in the specified folder.
     """
     try:
-        # Connect to Google Cloud Storage
         bucket = connect_gcp()
-        return None
+        
+        for image in images:
+            # Format file name with timestamp
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            filename = f"{timestamp}_{os.path.basename(image.name)}"
+            blob_path = f"{storage_folder}/{filename}"
+            
+            # Upload the image to the specified blob path in the bucket
+            blob = bucket.blob(blob_path)
+            blob.upload_from_file(image, content_type=image.type)
+            logger.info(f"Image {filename} uploaded to {blob_path}.")
+        
+        logger.info("All images uploaded successfully.")
+        
     except Exception as e:
-        logger.error(f"Error uploading images: {e}")
-        return None
+        logger.error(f"Error uploading images to Google Cloud Storage: {e}")
+        raise e
