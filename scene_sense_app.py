@@ -2,8 +2,14 @@
 import streamlit as st
 import requests
 
-from app.homepage import show_home_page, show_login_page, show_signup_page
-from app.gallery import show_gallery_page, show_upload_page, show_search_results_page
+from app import (
+    show_home_page,
+    show_login_page,
+    show_signup_page,
+    show_gallery_page,
+    show_search_page,
+    show_upload_page,
+)
 
 # Set Page Config
 st.set_page_config(
@@ -30,7 +36,6 @@ if st.session_state.logged_in:
 
     if page == "Home":
         st.subheader(f"Hello, {st.session_state.username.upper()}!")
-        st.write("Welcome to your photo gallery app.")
         
     elif page == "Gallery":
         show_gallery_page()
