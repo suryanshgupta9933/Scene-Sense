@@ -36,22 +36,21 @@ def process_image_embeddings(urls: List[str]):
             with torch.no_grad():
                 image_features = model.get_image_features(**inputs)
 
-            embedding = image_features.numpy().tolist()
+            embedding = image_features.numpy().tolist()[0]
             embeddings.append({"url": url, "embedding": embedding})
-            logger.info(f"Successfully processed image URL: {url}")
-
         except Exception as e:
             logger.error(f"Failed to get image embedding for URL {url}: {e}")
     return embeddings
 
-def return_text_embeddings(texts: List[str]):
-    inputs = processor(text=texts, return_tensors="pt", padding=True)
+def return_text_embeddings(text: str):
+    inputs = processor(text=text, return_tensors="pt", padding=True)
     with torch.no_grad():
         text_features = model.get_text_features(**inputs)
     
-    embedding = text_features.numpy().tolist()
+    embedding = text_features.numpy().tolist()[0]
     return embedding
 
 def embedding_pipeline(urls: List[str]):
     embedding_data = process_image_embeddings(urls)
     update_index(embedding_data)
+    logger.info("Embedding pipeline completed successfully.")

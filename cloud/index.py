@@ -18,8 +18,8 @@ def update_index(embeddings):
         embedding_data = []
         for data in embeddings:
             embedding_data.append({
-                "id": return_id(data["url"]),
-                "embedding": data["embedding"],
+                "id": return_user_id(data["url"]),
+                "values": data["embedding"],
                 "metadata": {
                     "filename": return_filename(data["url"]),
                     "url": data["url"],
@@ -46,13 +46,18 @@ def query_index(query_embedding, user_id):
         # Query the index
         results = index.query(
             vector=query_embedding,
-            top_k=20,
-            namespace=user_id
+            top_k=50,
+            namespace=user_id,
+            include_metadata=True
         )
         logger.info(f"Successfully queried the index for user: {user_id}")
-
+        print(results)
         # Extract URLs from the matches
-        urls = [match["metadata"]["url"] for match in results["matches"]]
+        try:
+            urls = [match["metadata"]["url"] for match in results["matches"]]
+        except Exception as e:
+            logger.error(f"Failed to extract URLs from the matches: {e}")
+            return None
         
         return urls
     except Exception as e:

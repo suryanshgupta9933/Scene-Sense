@@ -26,4 +26,4 @@ def show_upload_page():
         if urls:
             response = requests.post("http://localhost:8001/image-embeddings", json={"urls": urls})
             if response.status_code == 200:
-                st.success(response.json()["message"])
+                st.sidebar.warning(response.json()["message"])
