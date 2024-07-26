@@ -3,7 +3,7 @@ import os
 import logging
 
 from connections.pinecone import connect_pinecone
-from helper import return_user_id, return_embedding_id, return_date, return_time, return_filename
+from utils.helper import return_user_id, return_embedding_id, return_date, return_time, return_filename
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
