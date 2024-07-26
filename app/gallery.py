@@ -37,7 +37,7 @@ def show_upload_page():
     # st.session_state.uploaded_files = []
 
     # Upload Images
-    uploaded_files = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"], accept_multiple_files=True, key="upload")
     # st.session_state.uploaded_files = uploaded_files
     upload_button = st.button("Upload")
 
@@ -52,10 +52,8 @@ def show_upload_page():
     if upload_button and uploaded_files:
         # Upload images to Cloud Storage
         upload_images(st.session_state.storage, uploaded_files)
+        st.sidebar.success("Images uploaded successfully!")
         
-        st.success("Images uploaded successfully!")
-        time.sleep(2)  # Delay for user feedback
-
 def show_search_results_page():
     """
     Display the search results page of the app.
