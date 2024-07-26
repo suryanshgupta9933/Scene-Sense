@@ -3,7 +3,7 @@ import os
 import logging
 import secrets
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from jose import JWTError, jwt
@@ -62,7 +62,10 @@ async def signup(user: User):
     existing_user = user_credentials.find_one({"username": user.username})
     if existing_user:
         logger.warning(f"Username {user.username} already registered")
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered"
+        )
     # Hash the password
     hashed_password = pwd_context.hash(user.password)
     # Create a new storage for the user
@@ -80,7 +83,11 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = user_credentials.find_one({"username": form_data.username})
     if not user or not pwd_context.verify(form_data.password, user["password"]):
         logger.warning(f"Incorrect username or password for user: {form_data.username}")
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     access_token = create_access_token(data={"sub": user["username"]})
     return {"access_token": access_token, "token_type": "bearer"}
@@ -95,15 +102,24 @@ async def read_users_me(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if username is None:
             logger.error("Token validation failed: no username in payload")
-            raise HTTPException(status_code=401, detail="Could not validate credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+            )
     except JWTError:
         logger.error("Token validation failed: JWTError")
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
 
     user = user_credentials.find_one({"username": username})
     if user is None:
         logger.error(f"User not found: {username}")
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
 
     return {"id": user["id"], "username": user["username"]}
 
