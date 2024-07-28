@@ -18,7 +18,7 @@ def update_index(embeddings):
         embedding_data = []
         for data in embeddings:
             embedding_data.append({
-                "id": return_user_id(data["url"]),
+                "id": return_embedding_id(data["url"]),
                 "values": data["embedding"],
                 "metadata": {
                     "filename": return_filename(data["url"]),
