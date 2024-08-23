@@ -1,6 +1,8 @@
 # Importing Dependencies
 import os
 import logging
+import nltk
+from nltk.corpus import stopwords
 
 from connections.pinecone import connect_pinecone
 from utils.helper import return_user_id, return_embedding_id, return_date, return_time, return_filename
@@ -9,6 +11,10 @@ from cloud.upload import update_metadata
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Download the NLTK stopwords
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 
 def update_index(embeddings):
     try:
@@ -43,7 +49,15 @@ def update_index(embeddings):
         logger.error(f"Failed to update the index: {e}")
         return None
 
-def query_index(query_embedding, user_id):
+def calculate_threshold(search_query, base_threshold=0.15, increment_multiplier=0.02):
+    search_query = search_query.lower()
+    num_words = len([word for word in search_query.split() if word not in stop_words])
+    if num_words == 1:
+        return base_threshold
+    else:
+        return base_threshold + (num_words * increment_multiplier)
+
+def query_index(query_embedding, user_id, search_query):
     try:
         # Connect to Pinecone
         index = connect_pinecone()
@@ -55,11 +69,15 @@ def query_index(query_embedding, user_id):
             namespace=user_id,
             include_metadata=True
         )
+        # Test the results
+        for match in results["matches"]:
+            print("Filename:", match["metadata"]["filename"], "Score:", match["score"])
+        
         logger.info(f"Successfully queried the index for user: {user_id}")
         
-        # Extract URLs from the matches
+        # Extract URLs from the matches based on the threshold
         try:
-            urls = [match["metadata"]["url"] for match in results["matches"]]
+            urls = [match["metadata"]["url"] for match in results["matches"] if match["score"] > calculate_threshold(search_query)]
         except Exception as e:
             logger.error(f"Failed to extract URLs from the matches: {e}")
             return None

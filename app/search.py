@@ -13,13 +13,13 @@ def show_search_page():
     # Search Results Feed
     search_query = st.text_input("Search for images", value="", key="search")
     search = st.button("Search")
-    if search:
+    if search and search_query:
         # Get the embeddings for the search query
         response = requests.post("http://localhost:8001/text-embeddings", json={"text": search_query})
         if response.status_code == 200:
             query_embedding = response.json()["text_embedding"]
             # Query the index with the search embeddings
-            results = query_index(query_embedding, st.session_state.storage)
+            results = query_index(query_embedding, st.session_state.storage, search_query)
             if results:
                 # Display Search Results
                 cols = st.columns(2)
