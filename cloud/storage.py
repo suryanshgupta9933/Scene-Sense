@@ -36,7 +36,13 @@ def user_blobs(user_id):
         bucket = connect_gcp()
         blobs = list(bucket.list_blobs(prefix=f'{user_id}/'))
         blobs = [blob for blob in blobs if not blob.name.endswith('/')]
-        
+        for i, blob in enumerate(blobs):
+            blob.reload()
+            try:
+                if blob.metadata['embedding'] == 'False':
+                    blobs.pop(i)
+            except:
+                blobs.pop(i)
         return blobs
     except GoogleAPIError as e:
         logger.error(f"Failed to list blobs: {e}")
