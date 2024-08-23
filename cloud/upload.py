@@ -44,12 +44,12 @@ def update_metadata(user_id):
         # Connect to Google Cloud Storage
         bucket = connect_gcp()
         blobs = list(bucket.list_blobs(prefix=f'{user_id}/'))
-        blobs = [blob for blob in blobs if not blob.name.endswith('/')]
+        blobs = [blob.name for blob in blobs if not blob.name.endswith('/')]
         for b in blobs:
             blob = bucket.blob(b)
             blob.reload()
             current_metadata = blob.metadata
-            current_metadata["embedding"] = "True"
+            current_metadata['embedding'] = 'True'
             blob.metadata = current_metadata
             blob.patch()
         logger.info("Metadata updated successfully.")
