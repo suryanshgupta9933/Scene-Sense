@@ -24,7 +24,7 @@ def upload_images(storage_folder, images):
             
             # Upload the image to the specified blob path in the bucket
             blob = bucket.blob(blob_path)
-            blob.metadata = {"embedding": "false"}
+            blob.metadata = {"embedding": "False"}
             blob.upload_from_file(image, content_type=image.type)
             blobs.append(blob)
             logger.info(f"Image {filename} uploaded to {blob_path}.")
@@ -34,4 +34,25 @@ def upload_images(storage_folder, images):
         
     except Exception as e:
         logger.error(f"Error uploading images to Google Cloud Storage: {e}")
+        return None
+
+def update_metadata(user_id):
+    """
+    Update metadata for a specific blob in Google Cloud Storage.
+    """
+    try:
+        # Connect to Google Cloud Storage
+        bucket = connect_gcp()
+        blobs = list(bucket.list_blobs(prefix=f'{user_id}/'))
+        blobs = [blob for blob in blobs if not blob.name.endswith('/')]
+        for b in blobs:
+            blob = bucket.blob(b)
+            blob.reload()
+            current_metadata = blob.metadata
+            current_metadata["embedding"] = "True"
+            blob.metadata = current_metadata
+            blob.patch()
+        logger.info("Metadata updated successfully.")
+    except Exception as e:
+        logger.error(f"Error updating metadata: {e}")
         return None
