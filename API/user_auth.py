@@ -125,4 +125,4 @@ async def read_users_me(token: str = Depends(oauth2_scheme)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("API.user_auth:app", host="localhost", port=8000, reload=True)
+    uvicorn.run("API.user_auth:app", host="localhost", port=8000)
