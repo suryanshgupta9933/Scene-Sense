@@ -1,6 +1,7 @@
 # Importing Dependencies
 import os
 import requests
+from io import BytesIO
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -43,9 +44,11 @@ def show_search_page():
     if search_type == "Image Search": 
         search_image = st.file_uploader("Upload Image for Search", type=["jpg", "jpeg", "png"])
         search = st.button("Search")
+        print(search_image)
+        print(type(search_image))
         if search and search_image:
             # Get the embeddings for the search image
-            response = requests.post(CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT)
+            response = requests.post(CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT, files={"image": BytesIO(search_image.read())})
             if response.status_code == 200:
                 query_embedding = response.json()["image_embeddings"]
                 # Query the index with the search embeddings

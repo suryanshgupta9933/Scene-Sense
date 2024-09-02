@@ -42,6 +42,14 @@ def process_image_embeddings(urls: List[str]):
             logger.error(f"Failed to get image embedding for URL {url}: {e}")
     return embeddings
 
+def return_image_embeddings(image):
+    inputs = processor(images=image, return_tensors="pt", padding=True)
+    with torch.no_grad():
+        image_features = model.get_image_features(**inputs)
+    
+    embedding = image_features.numpy().tolist()[0]
+    return embedding
+
 def return_text_embeddings(text: str):
     inputs = processor(text=text, return_tensors="pt", padding=True)
     with torch.no_grad():
