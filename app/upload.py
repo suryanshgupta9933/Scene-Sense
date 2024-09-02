@@ -1,9 +1,15 @@
 # Importing Dependencies
+import os
 import requests
 import streamlit as st
+from dotenv import load_dotenv
 
 from cloud.upload import upload_images
 
+# Load environment variables
+load_dotenv()
+
+CLIP_MULTI_IMAGE_EMBEDDING_ENDPOINT = os.getenv("CLIP_MULTI_IMAGE_EMBEDDING_ENDPOINT")
 
 def show_upload_page():
     """
@@ -24,6 +30,6 @@ def show_upload_page():
     if upload_button and uploaded_files:
         urls = upload_images(st.session_state.storage, uploaded_files)
         if urls:
-            response = requests.post("http://localhost:8001/image-embeddings", json={"urls": urls})
+            response = requests.post(CLIP_MULTI_IMAGE_EMBEDDING_ENDPOINT, json={"urls": urls})
             if response.status_code == 200:
                 st.sidebar.warning(response.json()["message"])

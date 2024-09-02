@@ -1,6 +1,14 @@
 # Install Dependencies
+import os
 import requests
 import streamlit as st
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+USER_AUTH_TOKEN_ENDPOINT = os.getenv("USER_AUTH_TOKEN_ENDPOINT")
+USER_AUTH_LOGIN_ENDPOINT = os.getenv("USER_AUTH_LOGIN_ENDPOINT")
 
 def show_login_page():
     """
@@ -13,10 +21,10 @@ def show_login_page():
         if not password:
             st.warning("Please enter a password")
             return
-        response = requests.post("http://localhost:8000/token", data={"username": username, "password": password})
+        response = requests.post(USER_AUTH_TOKEN_ENDPOINT, data={"username": username, "password": password})
         if response.status_code == 200:
             token = response.json()["access_token"]
-            response = requests.get("http://localhost:8000/login", headers={"Authorization": f"Bearer {token}"})
+            response = requests.get(USER_AUTH_LOGIN_ENDPOINT, headers={"Authorization": f"Bearer {token}"})
             if response.status_code == 200:
                 st.session_state.logged_in = True
                 st.session_state.username = response.json()["username"]

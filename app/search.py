@@ -1,8 +1,16 @@
 # Importing Dependencies
+import os
 import requests
 import streamlit as st
+from dotenv import load_dotenv
 
 from cloud.index import query_index
+
+# Load environment variables
+load_dotenv()
+
+CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT = os.getenv("CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT")
+CLIP_TEXT_EMBEDDING_ENDPOINT = os.getenv("CLIP_TEXT_EMBEDDING_ENDPOINT")
 
 def show_search_page():
     """
@@ -18,7 +26,7 @@ def show_search_page():
         search = st.button("Search")
         if search and search_query:
             # Get the embeddings for the search query
-            response = requests.post("http://localhost:8001/text-embeddings", json={"text": search_query})
+            response = requests.post(CLIP_TEXT_EMBEDDING_ENDPOINT, json={"text": search_query})
             if response.status_code == 200:
                 query_embedding = response.json()["text_embedding"]
                 # Query the index with the search embeddings
@@ -36,8 +44,8 @@ def show_search_page():
         search_image = st.file_uploader("Upload Image for Search", type=["jpg", "jpeg", "png"])
         search = st.button("Search")
         if search and search_image:
-            # Get the embeddings for the search query
-            response = requests.post("http://localhost:8001/single-image-embeddings")
+            # Get the embeddings for the search image
+            response = requests.post(CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT)
             if response.status_code == 200:
                 query_embedding = response.json()["image_embeddings"]
                 # Query the index with the search embeddings
