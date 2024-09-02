@@ -16,14 +16,17 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Pydantic models
-class ClipImageRequest(BaseModel):
+class ClipMultiImageRequest(BaseModel):
     urls: List[str]
+
+class ClipSingleImageRequest(BaseModel):
+    
 
 class ClipTextRequest(BaseModel):
     text: str
 
-@app.post("/image-embeddings")
-async def get_image_embeddings(request: ClipImageRequest, background_tasks: BackgroundTasks):
+@app.post("/multi-image-embeddings")
+async def get_image_embeddings(request: ClipMultiImageRequest, background_tasks: BackgroundTasks):
     try:
         background_tasks.add_task(embedding_pipeline, request.urls)
         return JSONResponse(
@@ -33,6 +36,18 @@ async def get_image_embeddings(request: ClipImageRequest, background_tasks: Back
     except Exception as e:
         logger.error(f"Failed to start background task for image embeddings: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to start background task for image embeddings")
+
+@app.post("/single-image-embeddings")
+async def get_single_image_embeddings():
+    try:
+        embeddings = return_image_embeddings(request.urls)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={"image_embeddings": embeddings}
+        )
+    except Exception as e:
+        logger.error(f"Failed to get image embeddings: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get image embeddings")
 
 @app.post("/text-embeddings")
 async def get_text_embeddings(request: ClipTextRequest):

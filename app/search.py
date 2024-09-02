@@ -31,14 +31,15 @@ def show_search_page():
                             st.image(img, use_column_width=True)
                 else:
                     st.write("No results found.")
+
     if search_type == "Image Search": 
         search_image = st.file_uploader("Upload Image for Search", type=["jpg", "jpeg", "png"])
         search = st.button("Search")
         if search and search_image:
             # Get the embeddings for the search query
-            response = requests.post("http://localhost:8001/image-embeddings", json={"text": search_query})
+            response = requests.post("http://localhost:8001/single-image-embeddings")
             if response.status_code == 200:
-                query_embedding = response.json()["image_embedding"]
+                query_embedding = response.json()["image_embeddings"]
                 # Query the index with the search embeddings
                 results = query_index(query_embedding, st.session_state.storage, search_query)
                 if results:
