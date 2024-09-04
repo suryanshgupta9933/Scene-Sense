@@ -49,15 +49,17 @@ def update_index(embeddings):
         logger.error(f"Failed to update the index: {e}")
         return None
 
-def calculate_threshold(search_query, base_threshold=0.15, increment_multiplier=0.02):
+def calculate_threshold(search_query, text_base_threshold=0.15, increment_multiplier=0.02, image_base_threshold=0.55):
+    if search_query is None:
+        return image_base_threshold
     search_query = search_query.lower()
     num_words = len([word for word in search_query.split() if word not in stop_words])
     if num_words == 1:
-        return base_threshold
+        return 
     else:
-        return base_threshold + (num_words * increment_multiplier)
+        return text_base_threshold + (num_words * increment_multiplier)
 
-def query_index(query_embedding, user_id, search_query):
+def query_index(query_embedding, user_id, search_query=None):
     try:
         # Connect to Pinecone
         index = connect_pinecone()
