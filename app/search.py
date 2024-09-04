@@ -41,18 +41,16 @@ def show_search_page():
                 else:
                     st.write("No results found.")
 
-    if search_type == "Image Search": 
+    if search_type == "Image Search":
         search_image = st.file_uploader("Upload Image for Search", type=["jpg", "jpeg", "png"])
         search = st.button("Search")
-        print(search_image)
-        print(type(search_image))
         if search and search_image:
             # Get the embeddings for the search image
-            response = requests.post(CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT, files={"image": BytesIO(search_image.read())})
+            response = requests.post(CLIP_SINGLE_IMAGE_EMBEDDING_ENDPOINT, files={"file": search_image.getvalue()})
             if response.status_code == 200:
                 query_embedding = response.json()["image_embeddings"]
                 # Query the index with the search embeddings
-                results = query_index(query_embedding, st.session_state.storage, search_query)
+                results = query_index(query_embedding, st.session_state.storage)
                 if results:
                     # Display Search Results
                     cols = st.columns(2)
