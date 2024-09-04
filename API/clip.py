@@ -4,10 +4,10 @@ import logging
 from io import BytesIO
 from typing import List
 from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException, status, BackgroundTasks
+from fastapi import FastAPI, HTTPException, status, BackgroundTasks, File, UploadFile
 from fastapi.responses import JSONResponse
 
-from utils.embeddings import embedding_pipeline, return_text_embeddings
+from utils.embeddings import embedding_pipeline, return_image_embeddings, return_text_embeddings
 
 # Initialize FastAPI
 app = FastAPI()
@@ -19,9 +19,6 @@ logger = logging.getLogger(__name__)
 # Pydantic models
 class ClipMultiImageRequest(BaseModel):
     urls: List[str]
-
-class ClipSingleImageRequest(BaseModel):
-    image: BytesIO
 
 class ClipTextRequest(BaseModel):
     text: str
@@ -39,9 +36,10 @@ async def get_image_embeddings(request: ClipMultiImageRequest, background_tasks:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to start background task for image embeddings")
 
 @app.post("/single-image-embeddings")
-async def get_single_image_embeddings(request: ClipSingleImageRequest):
+async def get_single_image_embeddings(file: UploadFile = File(...)):
     try:
-        embeddings = return_image_embeddings(request.image)
+        image = await file.read()
+        embeddings = return_image_embeddings(image)
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={"image_embeddings": embeddings}
