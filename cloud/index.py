@@ -55,7 +55,7 @@ def calculate_threshold(search_query, text_base_threshold=0.15, increment_multip
     search_query = search_query.lower()
     num_words = len([word for word in search_query.split() if word not in stop_words])
     if num_words == 1:
-        return 
+        return text_base_threshold
     else:
         return text_base_threshold + (num_words * increment_multiplier)
 
