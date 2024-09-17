@@ -15,6 +15,7 @@ from cloud.index import update_index
 # Load environment variables
 load_dotenv()
 CLIP_MODEL = os.getenv("CLIP_MODEL")
+HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -22,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 # Initialize the model and processor
 try:
-    model = CLIPModel.from_pretrained(CLIP_MODEL)
-    processor = CLIPProcessor.from_pretrained(CLIP_MODEL)
+    model = CLIPModel.from_pretrained(CLIP_MODEL, token=HUGGINGFACE_API_TOKEN)
+    processor = CLIPProcessor.from_pretrained(CLIP_MODEL, token=HUGGINGFACE_API_TOKEN)
     logger.info(f"CLIP model '{CLIP_MODEL}' and processor initialized successfully")
 except Exception as e:
     logger.error(f"Failed to load CLIP model: {e}")
