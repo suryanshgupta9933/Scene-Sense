@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 from pinecone.grpc import PineconeGRPC as Pinecone
 
 # Load Environment Variables
-load_dotenv()
+if os.getenv("ENV") == "dev":
+    load_dotenv()
+
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
 

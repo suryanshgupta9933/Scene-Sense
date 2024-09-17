@@ -13,7 +13,9 @@ from utils.fetch_image import fetch_image_from_url
 from cloud.index import update_index
 
 # Load environment variables
-load_dotenv()
+if os.getenv("ENV") == "dev":
+    load_dotenv()
+
 CLIP_MODEL = os.getenv("CLIP_MODEL")
 HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
 

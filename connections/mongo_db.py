@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 
 # Load environment variables
-load_dotenv()
+if os.getenv("ENV") == "dev":
+    load_dotenv()
+
 DB_NAME = os.getenv("DB_NAME")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 MONGODB_URL = os.getenv("MONGO_CONNECTION_STRING")

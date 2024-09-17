@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 from google.cloud import storage
 
 # Load environment variables
-load_dotenv()
+if os.getenv("ENV") == "dev":
+    load_dotenv()
+
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 # Configure logging
