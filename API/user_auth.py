@@ -3,7 +3,7 @@ import os
 import logging
 import secrets
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from jose import JWTError, jwt
@@ -14,7 +14,7 @@ from cloud.storage import create_storage
 from connections.mongo_db import connect_mongo_db
 
 # Initialize FastAPI
-app = FastAPI()
+router = APIRouter()
 
 # Load environment variables
 load_dotenv()
@@ -54,7 +54,7 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-@app.post("/signup", response_model=dict)
+@router.post("/signup", response_model=dict)
 async def signup(user: User):
     """
     Register a new user.
@@ -75,7 +75,7 @@ async def signup(user: User):
     create_storage(user_id)
     return {"message": "User registered successfully"}
 
-@app.post("/token", response_model=Token)
+@router.post("/token", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """
     Login with username and password and return an access token.
@@ -92,7 +92,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(data={"sub": user["username"]})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/login")
+@router.get("/login")
 async def read_users_me(token: str = Depends(oauth2_scheme)):
     """
     Get user details from the access token.
