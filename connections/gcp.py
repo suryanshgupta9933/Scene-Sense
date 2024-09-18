@@ -17,7 +17,10 @@ logger = logging.getLogger(__name__)
 # Initialize the Google Cloud Storage client
 def connect_gcp():
     try:
-        storage_client = storage.Client.from_service_account_json('scene-sense-9933-190032d295c7.json')
+        if os.getenv("ENV") == "dev":
+            storage_client = storage.Client.from_service_account_json('scene-sense-9933-190032d295c7.json')
+        else:
+            storage_client = storage.Client()
         bucket_name = BUCKET_NAME
         bucket = storage_client.get_bucket(bucket_name)
         return bucket
