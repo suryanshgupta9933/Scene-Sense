@@ -6,18 +6,22 @@ services:
     command: uvicorn routes:app --host 0.0.0.0 --port 8080
     ports:
       - "8080:8080"
-    depends_on:
-      - streamlit
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
+    depends_on:
+      - streamlit
     networks:
       - webnet
 
   streamlit:
     build: .
-    command: streamlit run streamlit_app.py --server.port 8501 --server.enableCORS false
+    command: streamlit run scene_sense_app.py --server.port 8501 --server.enableCORS true
     ports:
       - "8501:8501"
+    env_file:
+      - .env
     networks:
       - webnet
 
