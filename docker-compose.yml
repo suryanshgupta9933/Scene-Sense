@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build: .
+    command: uvicorn routes:app --host 0.0.0.0 --port 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - streamlit
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - webnet
+
+  streamlit:
+    build: .
+    command: streamlit run streamlit_app.py --server.port 8501 --server.enableCORS false
+    ports:
+      - "8501:8501"
+    networks:
+      - webnet
+
+networks:
+  webnet:
