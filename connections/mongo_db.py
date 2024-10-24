@@ -5,12 +5,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 
 # Load environment variables
-if os.getenv("ENV") == "dev":
-    load_dotenv()
-
-DB_NAME = os.getenv("DB_NAME")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME")
-MONGODB_URL = os.getenv("MONGO_CONNECTION_STRING")
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,6 +14,10 @@ logger = logging.getLogger(__name__)
 # Initialize MongoDB client
 def connect_mongo_db():
     try:
+        DB_NAME = os.getenv("DB_NAME")
+        COLLECTION_NAME = os.getenv("COLLECTION_NAME")
+        MONGODB_URL = os.getenv("MONGO_CONNECTION_STRING")
+
         client = MongoClient(MONGODB_URL)
         db = client[DB_NAME]
         user_data = db[COLLECTION_NAME]

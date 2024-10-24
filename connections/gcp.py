@@ -7,10 +7,7 @@ from dotenv import load_dotenv
 from google.cloud import storage
 
 # Load environment variables
-if os.getenv("ENV") == "dev":
-    load_dotenv()
-
-BUCKET_NAME = os.getenv("BUCKET_NAME")
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,11 +16,14 @@ logger = logging.getLogger(__name__)
 # Initialize the Google Cloud Storage client
 def connect_gcp():
     try:
+        service_account = os.getenv("SERVICE_ACCOUNT")
+        bucket_name = os.getenv("BUCKET_NAME")
+
         if os.getenv("ENV") == "dev":
-            storage_client = storage.Client.from_service_account_json('scene-sense-9933-190032d295c7.json')
+            storage_client = storage.Client.from_service_account_json(service_account)
         else:
             storage_client = storage.Client()
-        bucket_name = BUCKET_NAME
+
         bucket = storage_client.get_bucket(bucket_name)
         return bucket
     except Exception as e:
