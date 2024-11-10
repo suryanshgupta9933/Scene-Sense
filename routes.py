@@ -1,4 +1,5 @@
 # Importing Dependencies
+import uvicorn
 from fastapi import FastAPI
 
 from API.clip import router as clip_router
@@ -14,3 +15,6 @@ app.include_router(user_router, prefix="/user")
 @app.get("/")
 async def root():
     return {"message": "Welcome to Scene Sense API"}
+
+if __name__ == "__main__":
+    uvicorn.run("routes:app", host="localhost", port=8080)
