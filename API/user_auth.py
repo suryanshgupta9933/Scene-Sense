@@ -122,7 +122,3 @@ async def read_users_me(token: str = Depends(oauth2_scheme)):
         )
 
     return {"id": user["id"], "username": user["username"]}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("API.user_auth:app", host="localhost", port=8000)

@@ -59,7 +59,3 @@ async def get_text_embeddings(request: ClipTextRequest):
     except Exception as e:
         logger.error(f"Failed to get text embeddings: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get text embeddings")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="localhost", port=8001)
