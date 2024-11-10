@@ -43,7 +43,7 @@ def update_metadata(user_id):
     try:
         # Connect to Google Cloud Storage
         bucket = connect_gcp()
-        blobs = list(bucket.list_blobs(prefix=f'{user_id}/'))
+        blobs = list(bucket.list_blobs(prefix=user_id))
         blobs = [blob.name for blob in blobs if not blob.name.endswith('/')]
         for b in blobs:
             blob = bucket.blob(b)
