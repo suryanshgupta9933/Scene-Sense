@@ -17,6 +17,9 @@ def show_gallery_page():
     sort_by = st.sidebar.radio("Sort by", ["Newest", "Oldest"])
     # Get User Images
     blobs = user_blobs(st.session_state.storage)
+    # Handling blob errors
+    if blobs is None:
+        blobs = []
     images = [blob.public_url for blob in blobs]
     images = images[::-1] if sort_by == "Newest" else images
     # Display Image Grid
