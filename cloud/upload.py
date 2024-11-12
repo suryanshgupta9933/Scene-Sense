@@ -36,7 +36,7 @@ def upload_images(storage_folder, images):
         logger.error(f"Error uploading images to Google Cloud Storage: {e}")
         return None
 
-def update_metadata(user_id):
+def update_metadata(user_id, image_count):
     """
     Update metadata for a specific blob in Google Cloud Storage.
     """
@@ -45,7 +45,7 @@ def update_metadata(user_id):
         bucket = connect_gcp()
         blobs = list(bucket.list_blobs(prefix=user_id))
         blobs = [blob.name for blob in blobs if not blob.name.endswith('/')]
-        for b in blobs:
+        for b in blobs[-image_count:]:
             blob = bucket.blob(b)
             blob.reload()
             current_metadata = blob.metadata

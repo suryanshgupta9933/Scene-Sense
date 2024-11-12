@@ -41,10 +41,12 @@ def update_index(embeddings):
             namespace=user_id
         )
 
-        # Update the metadata for the embeddings in Google Cloud Storage
-        update_metadata(user_id)
+        no_of_embeddings = len(embedding_data)
 
-        logger.info(f"Successfully updated the index for user: {user_id}")
+        # Update the metadata for the embeddings in Google Cloud Storage
+        update_metadata(user_id, no_of_embeddings)
+
+        logger.info(f"{no_of_embeddings} embeddings updated in the index for user: {user_id}")
     except Exception as e:
         logger.error(f"Failed to update the index: {e}")
         return None
