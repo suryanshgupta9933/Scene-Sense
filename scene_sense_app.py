@@ -27,9 +27,6 @@ if "username" not in st.session_state:
 if "storage" not in st.session_state:
     st.session_state.storage = ""
 
-# Title and description
-st.title('🖼️ Scene Sense')
-
 if st.session_state.logged_in:
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Choose an option", ["Home", "Gallery", "Search", "Upload", "Logout"])
@@ -51,6 +48,10 @@ if st.session_state.logged_in:
         st.session_state.username = ""
         st.rerun()
 else:
+    # Title and description
+    st.title('Scene Sense')
+    
+    # Sidebar
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Choose an option", ["Home", "Login", "Signup"])
 
