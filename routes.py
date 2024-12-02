@@ -12,7 +12,7 @@ app = FastAPI()
 app.include_router(clip_router, prefix="/clip")
 app.include_router(user_router, prefix="/user")
 
-@app.get("/")
+@app.get("/ready")
 async def root():
     return {"message": "Welcome to Scene Sense API"}
 
