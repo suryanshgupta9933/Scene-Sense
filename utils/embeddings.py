@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize the model and processor
 try:
-    model = CLIPModel.from_pretrained(CLIP_MODEL, token=HUGGINGFACE_API_TOKEN, trust_remote_code=True)
+    model = CLIPModel.from_pretrained(CLIP_MODEL, token=HUGGINGFACE_API_TOKEN)
     processor = CLIPProcessor.from_pretrained(CLIP_MODEL, token=HUGGINGFACE_API_TOKEN, trust_remote_code=True)
     logger.info(f"CLIP model '{CLIP_MODEL}' and processor initialized successfully")
 except Exception as e:
