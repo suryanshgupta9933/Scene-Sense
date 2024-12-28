@@ -15,3 +15,6 @@ app.include_router(user_router, prefix="/user")
 @app.get("/ready")
 async def ready():
     return {"message": "Welcome to Scene Sense API"}
+
+if __name__ == "__main__":
+    uvicorn.run("routes:app", host="0.0.0.0", port=8000)
