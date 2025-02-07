@@ -16,4 +16,7 @@ credentials are stored in MongoDB and it uses password hashing techniques and JS
 management, enabling efficient and fast image retrieval.
 
 ## Old Demo
-https://github.com/suryanshgupta9933/Scene-Sense/assets/75354950/11ee5e06-4d73-47d9-9ff6-3ac13334f905
+
+
+https://github.com/user-attachments/assets/f86b8a68-051e-435b-b24d-6872e36093e2
+
