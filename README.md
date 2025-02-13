@@ -15,7 +15,7 @@ credentials are stored in MongoDB and it uses password hashing techniques and JS
 - The app leverages Google Cloud Platform for storage and deployment and Pinecone for embedding
 management, enabling efficient and fast image retrieval.
 
-## Old Demo
+## Demo
 
 
 https://github.com/user-attachments/assets/f86b8a68-051e-435b-b24d-6872e36093e2
