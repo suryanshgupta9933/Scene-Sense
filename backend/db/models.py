@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.sql import func
 from pgvector.sqlalchemy import Vector
 from sqlalchemy.orm import relationship
@@ -13,7 +13,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)   # FIXED (not unique)
 
     images = relationship("Image", back_populates="user", cascade="all, delete")
-
+    storage_used = Column(Integer, default=0)
 
 class Image(Base):
     __tablename__ = "images"
@@ -30,3 +30,10 @@ class Image(Base):
 
     created_at = Column(DateTime, server_default=func.now(), index=True)
     expires_at = Column(DateTime, nullable=True)
+
+class AppConfig(Base):
+    __tablename__ = "app_config"
+
+    id = Column(Integer, primary_key=True)
+    max_users = Column(Integer, default=50)
+    per_user_storage_limit = Column(Integer, default=1_000_000_000)  # 1 GB
