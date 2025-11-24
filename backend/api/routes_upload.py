@@ -95,4 +95,100 @@ async def upload_image(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============================================================
+# 2) ZIP BULK UPLOAD (NEW)
+# ============================================================
 
+@router.post("/zip")
+async def upload_zip(
+    file: UploadFile = File(...),
+    user: str = Depends(require_user),
+    db: Session = Depends(get_db),
+):
+    if not file.filename.lower().endswith(".zip"):
+        raise HTTPException(400, "Only ZIP files supported")
+
+    # ---------------------------------
+    # Save ZIP temporarily
+    # ---------------------------------
+    tmp_zip_path = f"/tmp/{uuid4()}_{file.filename}"
+
+    zip_bytes = await file.read()
+    with open(tmp_zip_path, "wb") as f:
+        f.write(zip_bytes)
+
+    zip_size = len(zip_bytes)
+
+    # Check quota before extraction
+    db_user = ensure_storage_quota(db, user, zip_size)
+    update_user_storage(db, db_user, zip_size)
+
+    # ---------------------------------
+    # Extract ZIP
+    # ---------------------------------
+    extract_dir = f"/tmp/extract_{uuid4()}"
+    os.makedirs(extract_dir, exist_ok=True)
+
+    try:
+        with zipfile.ZipFile(tmp_zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_dir)
+
+    except zipfile.BadZipFile:
+        raise HTTPException(400, "Invalid ZIP file")
+
+    stored = []
+    allowed_exts = {"jpg", "jpeg", "png"}
+
+    # ---------------------------------
+    # Process ALL FILES
+    # ---------------------------------
+    for root, dirs, files in os.walk(extract_dir):
+        for fname in files:
+            ext = fname.lower().split(".")[-1]
+            if ext not in allowed_exts:
+                continue
+            src_path = os.path.join(root, fname)
+            file_size = os.path.getsize(src_path)
+
+            # Check remaining quota BEFORE saving
+            ensure_storage_quota(db, user, file_size)
+            # Validate image before embedding
+            try:
+                with open(src_path, "rb") as f:
+                    image_bytes = f.read()
+                # Verify real image
+                img = PILImage.open(BytesIO(image_bytes))
+                img.verify()  # throws error if corrupted
+
+            except Exception:
+                # Skip non-image or corrupted files
+                continue
+            # Save valid image
+            final_path = save_image(user, fname, image_bytes)
+            # Embed using CLIP
+            embedding = get_image_embedding(image_bytes)
+
+            # Add DB entry
+            db_entry = Image(
+                id=str(uuid4()),
+                user_id=user,
+                filename=fname,
+                filepath=final_path,
+                embedding=embedding,
+            )
+            db.add(db_entry)
+            db.commit()
+
+            # Update storage
+            update_user_storage(db, db_user, file_size)
+
+            stored.append(fname)
+
+    # Cleanup
+    os.remove(tmp_zip_path)
+    shutil.rmtree(extract_dir)
+
+    return {
+        "stored_files": stored,
+        "total_files": len(stored)
+    }
