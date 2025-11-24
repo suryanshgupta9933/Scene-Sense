@@ -14,6 +14,7 @@ class User(Base):
 
     images = relationship("Image", back_populates="user", cascade="all, delete")
     storage_used = Column(Integer, default=0)
+    is_admin = Column(Integer, default=0)  # 1 = admin, 0 = regular
 
 class Image(Base):
     __tablename__ = "images"
