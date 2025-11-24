@@ -4,14 +4,15 @@ from sqlalchemy.orm import Session
 import os
 import zipfile
 import shutil
+from datetime import datetime, timedelta
 
 from core.security import require_user
 from db.session import get_db
-from db.models import Image, User
+from db.models import Image as DBImage, User
 from storage.local_store import save_image
 from ml.embeddings_clip import get_image_embedding
 
-from PIL import Image as PILImage
+from PIL import Image
 from io import BytesIO
 
 router = APIRouter()
@@ -71,17 +72,21 @@ async def upload_image(
 
         # Save to storage
         filepath = save_image(user, file.filename, image_bytes)
+        
+        # Expiration time
+        expires = datetime.now() + timedelta(days=ttl_days)
 
         # Embed using CLIP server
         embedding = get_image_embedding(image_bytes)
 
         # Store in DB
-        db_entry = Image(
+        db_entry = DBImage(
             id=img_id,
             user_id=user,
             filename=file.filename,
             filepath=filepath,
             embedding=embedding,
+            expires_at=expires,
         )
         db.add(db_entry)
         db.commit()
@@ -104,6 +109,7 @@ async def upload_zip(
     file: UploadFile = File(...),
     user: str = Depends(require_user),
     db: Session = Depends(get_db),
+    ttl_days: int = 7,
 ):
     if not file.filename.lower().endswith(".zip"):
         raise HTTPException(400, "Only ZIP files supported")
@@ -157,7 +163,7 @@ async def upload_zip(
                 with open(src_path, "rb") as f:
                     image_bytes = f.read()
                 # Verify real image
-                img = PILImage.open(BytesIO(image_bytes))
+                img = Image.open(BytesIO(image_bytes))
                 img.verify()  # throws error if corrupted
 
             except Exception:
@@ -167,14 +173,17 @@ async def upload_zip(
             final_path = save_image(user, fname, image_bytes)
             # Embed using CLIP
             embedding = get_image_embedding(image_bytes)
+            # Expiration time
+            expires = datetime.now() + timedelta(days=ttl_days)
 
             # Add DB entry
-            db_entry = Image(
+            db_entry = DBImage(
                 id=str(uuid4()),
                 user_id=user,
                 filename=fname,
                 filepath=final_path,
                 embedding=embedding,
+                expires_at=expires,
             )
             db.add(db_entry)
             db.commit()
