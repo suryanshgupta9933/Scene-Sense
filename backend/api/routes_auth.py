@@ -50,7 +50,11 @@ def signup(payload: SignupRequest, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(400, "User already exists")
-
+    
+    count = db.query(User).count()
+    if count >= 50:
+        raise HTTPException(403, "User Limit reached")
+    
     user = User(
         id=str(uuid.uuid4()),
         email=payload.email,
