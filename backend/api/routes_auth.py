@@ -43,6 +43,36 @@ def create_jwt(user_id: str):
 
 
 # -------------------------------
+# Helper to decode JWT + load user
+# -------------------------------
+def get_current_user(
+    authorization: str = Header(None),
+    db: Session = Depends(get_db)
+):
+    if not authorization:
+        raise HTTPException(401, "Missing Authorization header")
+
+    try:
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(401, "Invalid auth scheme")
+    except Exception:
+        raise HTTPException(401, "Invalid Authorization header format")
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload["sub"]
+    except Exception:
+        raise HTTPException(401, "Invalid or expired token")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(401, "User not found")
+
+    return user
+
+
+# -------------------------------
 # SIGNUP
 # -------------------------------
 @router.post("/signup")
@@ -83,3 +113,4 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
     token = create_jwt(user.id)
     return {"token": token}
+
