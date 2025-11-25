@@ -43,6 +43,36 @@ def create_jwt(user_id: str):
 
 
 # -------------------------------
+# Helper to decode JWT + load user
+# -------------------------------
+def get_current_user(
+    authorization: str = Header(None),
+    db: Session = Depends(get_db)
+):
+    if not authorization:
+        raise HTTPException(401, "Missing Authorization header")
+
+    try:
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(401, "Invalid auth scheme")
+    except Exception:
+        raise HTTPException(401, "Invalid Authorization header format")
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload["sub"]
+    except Exception:
+        raise HTTPException(401, "Invalid or expired token")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(401, "User not found")
+
+    return user
+
+
+# -------------------------------
 # SIGNUP
 # -------------------------------
 @router.post("/signup")
@@ -50,7 +80,11 @@ def signup(payload: SignupRequest, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(400, "User already exists")
-
+    
+    count = db.query(User).count()
+    if count >= 50:
+        raise HTTPException(403, "User Limit reached")
+    
     user = User(
         id=str(uuid.uuid4()),
         email=payload.email,
@@ -79,3 +113,23 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
     token = create_jwt(user.id)
     return {"token": token}
+
+
+
+# -------------------------------
+# GET AUTHENTICATED USER DATA
+# -------------------------------
+@router.get("/me")
+def get_my_user_data(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "is_admin": current_user.is_admin,
+        "storage_bytes": current_user.storage_used,       # correct field
+        "num_images": len(current_user.images),           # derived correctly
+    }
+
+@router.get("/user/count")
+def get_user_count(db: Session = Depends(get_db)):
+    count = db.query(User).count()
+    return {"count": count}
