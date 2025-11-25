@@ -114,3 +114,17 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     token = create_jwt(user.id)
     return {"token": token}
 
+
+
+# -------------------------------
+# GET AUTHENTICATED USER DATA
+# -------------------------------
+@router.get("/me")
+def get_my_user_data(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "is_admin": current_user.is_admin,
+        "storage_bytes": current_user.storage_used,       # correct field
+        "num_images": len(current_user.images),           # derived correctly
+    }
