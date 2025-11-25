@@ -1,17 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from core.security import require_admin
+from core.job_queue import job_queue
 from db.session import get_db
 from db.models import User, Image
-from core.security import require_admin
 import os
-import shutil
 from storage.logger import logger
 from storage.cleanup import cleanup_expired_files
 
 router = APIRouter()
 
 # -----------------------------
-# List all users + storage usage
+# LIST ALL USERS + STORAGE
 # -----------------------------
 @router.get("/users")
 def list_users(db: Session = Depends(get_db), admin=Depends(require_admin)):
@@ -30,7 +30,7 @@ def list_users(db: Session = Depends(get_db), admin=Depends(require_admin)):
     return data
 
 # -----------------------------
-# Delete a user + all images
+# DELETE USER + DATA
 # -----------------------------
 @router.delete("/users/{user_id}")
 def delete_user(user_id: str, db: Session = Depends(get_db), admin=Depends(require_admin)):
@@ -38,7 +38,6 @@ def delete_user(user_id: str, db: Session = Depends(get_db), admin=Depends(requi
     if not user:
         raise HTTPException(404, "User not found")
 
-    # Delete all images on disk
     images = db.query(Image).filter(Image.user_id == user.id).all()
     for img in images:
         try:
@@ -48,7 +47,6 @@ def delete_user(user_id: str, db: Session = Depends(get_db), admin=Depends(requi
         except Exception as e:
             logger.error(f"Failed to delete file {img.filepath}: {e}")
 
-    # Delete DB entries
     db.query(Image).filter(Image.user_id == user.id).delete()
     db.delete(user)
     db.commit()
@@ -56,7 +54,7 @@ def delete_user(user_id: str, db: Session = Depends(get_db), admin=Depends(requi
     return {"message": f"User {user.email} deleted successfully"}
 
 # -----------------------------
-# Trigger cleanup manually
+# MANUAL CLEANUP
 # -----------------------------
 @router.post("/cleanup")
 def trigger_cleanup(db: Session = Depends(get_db), admin=Depends(require_admin)):
@@ -66,3 +64,21 @@ def trigger_cleanup(db: Session = Depends(get_db), admin=Depends(require_admin))
     except Exception as e:
         logger.error(f"Manual cleanup failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# -----------------------------
+# LIST JOB QUEUE
+# -----------------------------
+@router.get("/jobs")
+def list_jobs(admin=Depends(require_admin)):
+    jobs = job_queue.list_jobs()
+    result = []
+    for j in jobs:
+        result.append({
+            "job_id": j["id"],
+            "status": j["status"],
+            "user_id": j["kwargs"].get("user_id") or j["args"][0],
+            "filename": j["kwargs"].get("filename") or j["args"][1],
+            "created_at": j["created_at"],
+            "error": j.get("error")
+        })
+    return result
