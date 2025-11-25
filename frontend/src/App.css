@@ -1,0 +1,146 @@
+/* Global */
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  background: #f7f7f7;
+  color: #222;
+}
+
+/* Landing Page Container */
+.landing-container {
+  max-width: 480px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Title */
+.landing-title {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+/* User count text */
+.user-count {
+  font-size: 1.8rem;
+  color: #ffffff;
+  margin-bottom: 26px;
+}
+
+/* Form card (matches dashboard cards) */
+.form-block {
+  background: #ffffff;
+  padding: 26px 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin: 28px 0;
+  text-align: left;
+}
+
+/* Divider line to match dashboard aesthetic */
+.divider {
+  height: 1px;
+  width: 100%;
+  background: #e2e2e2;
+  margin: 26px 0;
+}
+
+/* Ensure all inputs/buttons match the dashboard style */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 16px;
+  background: #222;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+button:hover {
+  background: #444;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-image: url('./assets/bg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: Arial, sans-serif;
+}
+
+/* Dark overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55); /* adjust darkness: 0.4 = lighter, 0.7 = darker */
+  pointer-events: none;            /* keep UI clickable */
+  z-index: -1;                     /* stays behind all content */
+}
+
+
+/* Container styling for auth pages */
+.auth-container {
+  background: rgba(0, 0, 0, 0.6);    /* dark overlay */
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 420px;
+  margin: 60px auto;
+  color: white;
+  backdrop-filter: blur(4px);
+}
+
+/* Title */
+.app-title {
+  text-align: center;
+  color: white;
+  margin-top: 40px;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+/* Shared form styles */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  padding: 10px;
+  background: #1c7ed6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1864ab;
+}
