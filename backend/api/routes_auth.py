@@ -128,3 +128,8 @@ def get_my_user_data(current_user: User = Depends(get_current_user)):
         "storage_bytes": current_user.storage_used,       # correct field
         "num_images": len(current_user.images),           # derived correctly
     }
+
+@router.get("/user/count")
+def get_user_count(db: Session = Depends(get_db)):
+    count = db.query(User).count()
+    return {"count": count}
