@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
+from fastapi.staticfiles import StaticFiles
 
 from api.routes_auth import router as auth_router
 from api.routes_upload import router as upload_router
@@ -8,6 +9,7 @@ from api.routes_search import router as search_router
 from api.routes_cleanup import router as cleanup_router
 from api.routes_admin import router as admin_router
 
+from core.job_queue import job_queue
 
 from db.init_db import init_db
 from storage.cleanup import cleanup_loop
@@ -44,6 +46,7 @@ def create_app():
 
         # Start background cleanup task
         asyncio.create_task(cleanup_loop())
+        asyncio.create_task(job_queue.worker())  # start async worker
 
     # --------------------
     # HEALTH CHECK
@@ -57,3 +60,8 @@ def create_app():
 
 app = create_app()
 app.include_router(admin_router, prefix="/admin")
+app.mount(
+    "/files",
+    StaticFiles(directory="/Volumes/scenesense"),
+    name="files"
+)
