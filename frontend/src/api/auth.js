@@ -1,5 +1,5 @@
 // src/api/auth.js
-const API_URL = "http://localhost:8000/auth";
+const API_URL = "http://192.168.0.75:8020/auth";
 
 export const signup = async (email, password) => {
   const res = await fetch(`${API_URL}/signup`, {

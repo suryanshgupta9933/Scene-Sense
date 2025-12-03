@@ -17,7 +17,7 @@ const AppContent = () => {
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await fetch("http://localhost:8000/auth/user/count");
+        const res = await fetch("http://192.168.0.75:8020/auth/user/count");
         const data = await res.json();
         setUserCount(data.count);
       } catch (err) {
