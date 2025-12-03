@@ -101,7 +101,6 @@ packaging
 pandas==2.2.2
 pandocfilters==1.5.1
 parso
-passlib==1.7.4
 pickleshare
 pillow==10.4.0
 pinecone-client==5.0.0
@@ -188,3 +187,7 @@ websockets==12.0
 wheel==0.43.0
 widgetsnbextension==4.0.11
 zipp
+PyJWT
+pydantic[email]
+"passlib[bcrypt]"
+bcrypt==4.0.1
