@@ -4,7 +4,7 @@ A local, privacy-first visual search engine that lets you upload images, store C
 
 ### Demo Video
 
-https://github.com/<your-username>/<your-repo>/assets/<asset-id>
+https://github.com/suryanshgupta9933/Scene-Sense/assets/Scene-Sense%20POC.mp4
 
 ## Features
 
