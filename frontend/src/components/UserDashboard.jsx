@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import "./UserDashboard.css";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://192.168.0.75:8020";
 
 export default function UserDashboard() {
   const { token, logout } = useContext(AuthContext);
