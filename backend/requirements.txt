@@ -3,7 +3,7 @@ uvicorn[standard]
 psycopg2-binary
 sqlalchemy
 alembic
-passlib[bcrypt]
+"passlib[bcrypt]" bcrypt==4.0.1  
 python-jose
 python-dotenv
 requests
@@ -12,3 +12,4 @@ pgvector
 Pillow
 python-multipart
 aiofiles
+PyJWT==2.10.1
