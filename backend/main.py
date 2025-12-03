@@ -62,6 +62,6 @@ app = create_app()
 app.include_router(admin_router, prefix="/admin")
 app.mount(
     "/files",
-    StaticFiles(directory="/Volumes/scenesense"),
+    StaticFiles(directory="/mnt/FourTB/Scene-Sense-Storage/storage"),
     name="files"
 )
